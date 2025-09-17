@@ -50,7 +50,8 @@ $(document).ready(function() {
                 $('#register-section').hide();
             },
             error: function(xhr, status, error) {
-                alert('Registration failed: ' + xhr.responseText);
+                console.error("Registration failed. Status:", status, "Error:", error, "Response:", xhr.responseText);
+                alert('Registration failed: ' + (xhr.responseText || 'No response from server. Check if the backend is running and if CORS is configured correctly.'));
             }
         });
     }
@@ -71,7 +72,8 @@ $(document).ready(function() {
                 alert('Login successful!');
             },
             error: function(xhr, status, error) {
-                alert('Login failed: ' + xhr.responseText);
+                console.error("Login failed. Status:", status, "Error:", error, "Response:", xhr.responseText);
+                alert('Login failed: ' + (xhr.responseText || 'No response from server. Check if the backend is running and if CORS is configured correctly.'));
             }
         });
     }
@@ -102,7 +104,8 @@ $(document).ready(function() {
                 $('#marks-form')[0].reset();
             },
             error: function(xhr, status, error) {
-                alert('Failed to enter marks: ' + xhr.responseText);
+                console.error("Failed to enter marks. Status:", status, "Error:", error, "Response:", xhr.responseText);
+                alert('Failed to enter marks: ' + (xhr.responseText || 'No response from server. Check if the backend is running and if CORS is configured correctly.'));
             }
         });
     }

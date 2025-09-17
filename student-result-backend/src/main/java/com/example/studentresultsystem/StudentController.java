@@ -1,17 +1,13 @@
 package com.example.studentresultsystem;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/students")
+@CrossOrigin(origins = "http://localhost:3000")
 public class StudentController {
 
     @Autowired
@@ -20,52 +16,38 @@ public class StudentController {
     @Autowired
     private MarksRepository marksRepository;
 
-    @PostMapping("/students/register")
-    public ResponseEntity<?> registerStudent(@RequestBody Student student) {
-        if (studentRepository.findByUsername(student.getUsername()) != null) {
-            return new ResponseEntity<>("Username already exists", HttpStatus.BAD_REQUEST);
-        }
-        return new ResponseEntity<>(studentRepository.save(student), HttpStatus.CREATED);
+    @GetMapping
+    public List<Student> getAllStudents() {
+        return studentRepository.findAll();
     }
 
-    @PostMapping("/students/login")
-    public ResponseEntity<?> loginStudent(@RequestBody Student student) {
-        Student existingStudent = studentRepository.findByUsername(student.getUsername());
-        if (existingStudent == null || !existingStudent.getPassword().equals(student.getPassword())) {
-            return new ResponseEntity<>("Invalid username or password", HttpStatus.UNAUTHORIZED);
-        }
-        Map<String, Long> response = new HashMap<>();
-        response.put("studentId", existingStudent.getId());
-        return new ResponseEntity<>(response, HttpStatus.OK);
+    @PostMapping
+    public Student createStudent(@RequestBody Student student) {
+        return studentRepository.save(student);
     }
 
-    @PostMapping("/marks")
-    public ResponseEntity<?> enterMarks(@RequestBody Marks marks) {
-        return new ResponseEntity<>(marksRepository.save(marks), HttpStatus.CREATED);
+    @PostMapping("/{id}/marks")
+    public Marks addMarks(@PathVariable Long id, @RequestBody Marks marks) {
+        marks.setStudentId(id);
+        int total = marks.getSubject1() + marks.getSubject2() + marks.getSubject3();
+        marks.setTotal(total);
+        marks.setPercentage(total / 3.0);
+        return marksRepository.save(marks);
     }
 
-    @GetMapping("/students/{studentId}/average")
-    public ResponseEntity<?> getStudentAverage(@PathVariable Long studentId) {
-        List<Marks> marks = marksRepository.findByStudentId(studentId);
-        if (marks.isEmpty()) {
-            return new ResponseEntity<>("No marks found for this student", HttpStatus.NOT_FOUND);
-        }
-        double sum = 0;
-        for (Marks mark : marks) {
-            sum += mark.getScore();
-        }
-        double average = sum / marks.size();
-        Map<String, Double> response = new HashMap<>();
-        response.put("average", average);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+    @GetMapping("/{id}/marks")
+    public Marks getMarks(@PathVariable Long id) {
+        return marksRepository.findByStudentId(id);
     }
 
-    @GetMapping("/students/topper")
-    public ResponseEntity<?> getTopper() {
-        List<Topper> toppers = marksRepository.findTopper();
-        if (toppers.isEmpty()) {
-            return new ResponseEntity<>("No marks have been entered yet", HttpStatus.NOT_FOUND);
+    @GetMapping("/topper")
+    public Topper getTopper() {
+        List<Marks> allMarks = marksRepository.findAll();
+        if (allMarks.isEmpty()) {
+            return null;
         }
-        return new ResponseEntity<>(toppers.get(0), HttpStatus.OK);
+        Marks topperMarks = allMarks.stream().max((m1, m2) -> Double.compare(m1.getPercentage(), m2.getPercentage())).get();
+        Student student = studentRepository.findById(topperMarks.getStudentId()).get();
+        return new Topper(student, topperMarks);
     }
 }

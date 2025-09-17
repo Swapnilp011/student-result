@@ -1,27 +1,27 @@
 package com.example.studentresultsystem;
 
 public class Topper {
-    private String username;
-    private double average;
+    private Student student;
+    private Marks marks;
 
-    public Topper(String username, double average) {
-        this.username = username;
-        this.average = average;
+    public Topper(Student student, Marks marks) {
+        this.student = student;
+        this.marks = marks;
     }
 
-    public String getUsername() {
-        return username;
+    public Student getStudent() {
+        return student;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setStudent(Student student) {
+        this.student = student;
     }
 
-    public double getAverage() {
-        return average;
+    public Marks getMarks() {
+        return marks;
     }
 
-    public void setAverage(double average) {
-        this.average = average;
+    public void setMarks(Marks marks) {
+        this.marks = marks;
     }
 }
