@@ -41,16 +41,17 @@ To analyze real-world data using Machine Learning techniques.
 
 
 from sklearn.linear_model import LinearRegression
+# Input values
+x = [[10],[20],[30],[40],[50]]
 
-x = [[1],[2],[3],[4]]
-y = [2,4,6,8]
+# Output values
+y = [100,200,300,400,500]
 
+# Create model
 model = LinearRegression()
 
-model.fit(x,y)
+# Train model
+model.fit(x, y)
 
-print(model.predict([[5]]))
-
-
-Output
-[10.]
+# Predict value
+print("Prediction for 60 =", model.predict([[60]]))
